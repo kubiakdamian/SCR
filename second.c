@@ -49,7 +49,7 @@ int main(int argc, char *argv[])
         if(pid == 0) { 
                 printf("Client started\n");
 
-                if((connectionId = ConnectAttach(0, processId, receiveChannelId, 0, 0)) == -1) {
+                if((connectionId = ConnectAttach(0, processId, receiveChannelId, 0, 0)) == -1) { // connect receiveChannelId to pid
                         perror("Connection: ");
                         return EXIT_FAILURE;
                 }
@@ -66,7 +66,7 @@ int main(int argc, char *argv[])
                         return EXIT_FAILURE;
                 }
 
-                if((numbersHandler = (int*)mmap(NULL, memorySize, PROT_READ | PROT_WRITE, MAP_SHARED, sharedMemmory, 0 )) == MAP_FAILED) {
+                if((numbersHandler = (int*)mmap(NULL, memorySize, PROT_READ | PROT_WRITE, MAP_SHARED, sharedMemmory, 0 )) == MAP_FAILED) { //MAP_SHARED - data will work in the same memory area instead of creating new ones
                         perror("Mapping: ");
                         return EXIT_FAILURE;
                 }       
@@ -94,7 +94,7 @@ int main(int argc, char *argv[])
                 }
 
                 shm_unlink(messageName); //After unlink I can't access the object
-                printf("Client end\n");
+                printf("Client closed\n");
         }
 
         else { 
@@ -136,7 +136,7 @@ int main(int argc, char *argv[])
                         return EXIT_FAILURE;
                 }
 
-                printf("Server end\n");
+                printf("Server closed\n");
         }
 
         return 0;
