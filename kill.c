@@ -11,8 +11,7 @@ int main(int argc, const char* argv[]) {
 	union sigval sig;
 
 	if(argc != 4) {
-		printf("Niepoprawna ilosc argumentow\n Dodac argumenty pid, signal_id, data\n");
-		// wszystko jako integery
+		printf("Wrong data\n");
 		return -1;
 	}
 
@@ -20,12 +19,11 @@ int main(int argc, const char* argv[]) {
 	sig_number = atoi(argv[2]);
 	sig.sival_int = atoi(argv[3]);
 
-	//zamiana sygnalu na proces jak zwraca  -1 to blad
-	if(sigqueue(pid, sig_number, sig) == -1) {
+	if(sigqueue(pid, sig_number, sig) == -1) { //signal to a process
         perror("sigqueue: ");
     }
-	//potwierdzenie wyslania
-    printf("Sygnal %d z wartoscia %d zostal wyslany.\n", sig_number, sig.sival_int);
+
+    printf("Signal sent.\n");
 
 
 	return 0;

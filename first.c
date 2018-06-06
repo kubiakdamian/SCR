@@ -10,20 +10,22 @@ void printSignalInfo(int value, int signalNumber){
 void setAvailableSignals(){
 	sigset_t set;
 
-	sigfillset(&set);
-	pthread_sigmask(SIG_BLOCK,&set,NULL);
+	if(sigfillset(&set) == -1){ //Fill with all signals
+		return -1;
+	} 
+	pthread_sigmask(SIG_BLOCK,&set,NULL); //mask with set union, to fetch set with proper thread
 }
 
 void *firstSignal(void *arg){
 	sigset_t set;
-	siginfo_t signal_info_1;
+	siginfo_t firstInfo;
 	pthread_sigmask(SIG_BLOCK,&set,NULL);
-	sigemptyset(&set);
-	sigaddset(&set,SIGRTMIN);
+	sigemptyset(&set); //initializes set
+	sigaddset(&set,SIGRTMIN); // range of supported real-time signals SIGRTMIN to SIGRTMAX
 
 	while(1){
-		sigwaitinfo(&set,&signal_info_1);
-		printSignalInfo(signal_info_1.si_value.sival_int, signal_info_1.si_signo);
+		sigwaitinfo(&set,&firstInfo);
+		printSignalInfo(firstInfo.si_value.sival_int, firstInfo.si_signo);
 	}
 
 	return NULL;
@@ -31,14 +33,14 @@ void *firstSignal(void *arg){
 
 void *secondSignal(void *arg){
 	sigset_t set;
-	siginfo_t signal_info_2;
+	siginfo_t secondInfo;
 	pthread_sigmask(SIG_BLOCK,&set,NULL);
 	sigemptyset(&set);
 	sigaddset(&set,SIGRTMIN+1);
 
 	while(1){
-		sigwaitinfo(&set,&signal_info_2);
-		printSignalInfo(signal_info_2.si_value.sival_int, signal_info_2.si_signo);
+		sigwaitinfo(&set,&secondInfo);
+		printSignalInfo(secondInfo.si_value.sival_int, secondInfo.si_signo);
 	}
 
 	return NULL;
@@ -55,11 +57,6 @@ void setThreads(){
 	pthread_join(thread_1,NULL);
 	pthread_join(thread_2,NULL);
 }
-
-
-
-
-
 
 int main(void) {
 	setAvailableSignals();
